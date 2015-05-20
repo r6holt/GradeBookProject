@@ -1,7 +1,10 @@
 
-public class Assignment {
-  public static void main(String[] args){
-  System.out.println();
+public class Assignment{
+  int score;
+  int outOf;
+  public Assignment(int score, int outOf){
+    this.score=score;
+    this.outOf=outOf;
   }
-
 }
+
