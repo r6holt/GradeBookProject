@@ -1,13 +1,14 @@
-
 import java.util.*;
 public class Class {
-    ArrayList<student> list = new ArrayList<student>();
-    public Class ()
-    {
+    ArrayList<Student> list = new ArrayList<Student>();
+    public Class () {
     }
-    public void addStudent(Student student)
-    {
+    public void addStudent(Student student) {
       list.add(student);
+    }
+    
+    public ArrayList<Student> get() {
+    	return list;
     }
 }
 
