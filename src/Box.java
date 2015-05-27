@@ -18,4 +18,13 @@ public class Box {
 		all.remove(i);
 	}
 	
+	public Class getClass(int i) {
+		return all.get(i);
+	}
+	
+	public int getID(Class cla) {
+		int n = all.indexOf(cla);
+		return n;
+	}
+	
 }

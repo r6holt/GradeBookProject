@@ -17,9 +17,10 @@ public class GUI {
     JFrame show = new JFrame();
     ArrayList<String> students = new ArrayList<String>();
     ArrayList<JTextField> fields = new ArrayList<JTextField>();
-    JPanel west = new JPanel(new GridLayout(10,1));
-    JPanel middle = new JPanel(new GridLayout(10,1));
-    JPanel east = new JPanel(new GridLayout(10,1));
+    JPanel west = new JPanel(new GridLayout(20,1));
+    JPanel middle = new JPanel(new GridLayout(20,1));
+    JPanel east = new JPanel(new GridLayout(20,1));
+    ArrayList<JLabel> grades = new ArrayList<JLabel>();
 
     Box box = new Box();
     File file = new File("hold2.txt");
@@ -31,7 +32,18 @@ public class GUI {
         Dimension d = new Dimension(350,400);
         frame.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
         frame.setBackground(Color.RED);
-        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+        	  public void windowClosing(WindowEvent e) {
+        		  int confirmed = JOptionPane.showConfirmDialog(null, 
+        			    "Do you want to save your work?", "Exit Program Message Box",
+        			    JOptionPane.YES_NO_OPTION);
+
+        		  if (confirmed == JOptionPane.YES_OPTION) {
+        			    save();
+        		  }
+        	  }
+        });
         frame.setVisible(true);
         frame.setSize(d);
         frame.setLocationRelativeTo(null);
@@ -49,14 +61,13 @@ public class GUI {
         add.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
-                    //PrintStream out = new PrintStream(new File("hold2.txt"));
                     String name = JOptionPane.showInputDialog(null, "Name of new Class");
                     if(!name.trim().equals("")) {
                         JButton add = new JButton(name);
-                        Class cla = new Class();
+                        Class cla = new Class(name);
                         box.add(cla);
                         info.add(name);
-                        info.add("0");
+                        info.add("");
                         buttonO.add(add);
                         center.add(add);
                         buttons.add(name);
@@ -65,7 +76,8 @@ public class GUI {
                         add.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent event) {
-                                    classes(add);
+                                    int ID = box.getID(cla);
+                                	classes(add, ID);
                                 }
                             });
                     }
@@ -78,10 +90,9 @@ public class GUI {
         delete.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
-                    if(!noClasses()) {
+                    if(!isNoClasses()) {
                         ArrayList<JCheckBox> delete = new ArrayList<JCheckBox>();
                         JFrame destroy = new JFrame("Delete");
-                        destroy.setVisible(true);
                         destroy.setLayout(new GridLayout(buttons.size()+2,1));
                         destroy.add(new JLabel("What classes would you like to delete?"));
                         for(int i=0; i<buttons.size(); i++) {
@@ -91,30 +102,28 @@ public class GUI {
                         destroy.pack();
                         destroy.setLocationRelativeTo(null);
                         JButton done = new JButton("DONE");
+                        destroy.setVisible(true);
                         done.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent event) {
-                                    int length = buttons.size();
                                     int count = 0;
-                                    for( int i=0; i<length; i++) {
+                                    for( int i=0; i<delete.size(); i++) {
                                         if(delete.get(i).isSelected()) {
                                             center.remove(buttonO.get(i-count));
                                             buttonO.remove(i-count);
                                             buttons.remove(i-count);
+                                            box.remove(i-count);
                                             count++;
-                                            box.remove(i);
                                         }
                                     }
-                                    //noClasses();
-                                    destroy.setVisible(false);
+                                    destroy.dispose();
+                                    noClasses();
+                                    frame.setVisible(false);
                                     frame.setVisible(true);
                                 }
                             });
 
                         destroy.add(done);
-
-                        noClasses();
-                        frame.setVisible(true);
                     }
                     else {
                         JOptionPane.showMessageDialog(null, "You have no classes to delete.");
@@ -142,33 +151,43 @@ public class GUI {
 
     }
 
-    public boolean noClasses() {
+    public void noClasses() {
         if(buttons.size()==0) {
             center.add(none);
             frame.setVisible(true);
-            return true;
         }
         else {
             center.remove(none);
             frame.setVisible(true);
-            return false;
         }
-
+    }
+    
+    public boolean isNoClasses() {
+    	if(buttons.size()==0) {
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
     }
 
     int student = 1;
-    public void classes(JComponent selected) {
+    public void classes(JComponent selected, int ID) {     	
         JTextField AssignName = new JTextField(10);
         JTextField OutOf = new JTextField(10);
+        Class cla = box.getClass(ID);
 
-        Dimension d2 = new Dimension(500,400);
+        Dimension d2 = new Dimension(500,600);
         show.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
         show.setBackground(Color.RED);
-        show.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        show.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         show.setVisible(true);
         show.setSize(d2);
         show.setLocationRelativeTo(null);
-        show.add(new JScrollBar());
+        
+        //JScrollPane pane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        //show.add(BorderLayout.WEST, pane);
+        //show.setContentPane(pane);
 
         show.setLayout(new BorderLayout());
         show.add(BorderLayout.NORTH, new JLabel(buttons.get(buttonO.indexOf(selected))));
@@ -177,11 +196,19 @@ public class GUI {
         submit.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
-                    for(int i=0; i<fields.size(); i++) {
-                        students.add(fields.get(i).getText());
+                	for(int i=0; i<fields.size(); i++) {
+                		if(cla.searchName(fields.get(i).getText())==-1){
+                			students.add(fields.get(i).getText());
+	                        Student stud = new Student(fields.get(i).getText());
+	                        cla.addStudent(stud);
+                		}
                     }
                 }
             });
+        
+        for(int i=0; i<west.getComponentCount(); i++) {
+        	east.add(new JLabel("  %"));
+        }
 
         show.add(BorderLayout.SOUTH, submit);
         show.add(BorderLayout.WEST, west);
@@ -203,10 +230,12 @@ public class GUI {
                 @Override
                 public void actionPerformed(ActionEvent event) {
                     JTextField texty = new JTextField(10);
-                    int size = students.size();
                     west.add(texty);
                     fields.add(texty);
-                    middle.add(new JLabel("Grade TBD"));
+                    JLabel lab = new JLabel("        TBD");
+        	        middle.add(lab);
+        	        grades.add(lab);
+        	        east.add(new JLabel("  %"));
                     show.pack();
                     show.setVisible(true);
                     student++;
@@ -216,13 +245,14 @@ public class GUI {
         assignment.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
+                	ArrayList<JTextField> scores = new ArrayList<JTextField>();
                     JFrame ass = new JFrame("Assignments");
-                    JPanel panWest = new JPanel(new GridLayout(10,1));
-                    JPanel panEast = new JPanel(new GridLayout(10,1));
-                    Dimension d2 = new Dimension(300,350);
+                    JPanel panWest = new JPanel(new GridLayout(20,1));
+                    JPanel panEast = new JPanel(new GridLayout(20,1));
+                    Dimension d2 = new Dimension(300,550);
                     ass.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
                     ass.setBackground(Color.RED);
-                    ass.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+                    ass.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     ass.setVisible(true);
                     ass.setSize(d2);
                     ass.setLocationRelativeTo(null);
@@ -233,12 +263,28 @@ public class GUI {
                     panWest.add(new JLabel("Point Total (out of):"));
                     panEast.add(OutOf);
                     JButton sub = new JButton("Submit");
+                    sub.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent event) {
+                        	int t = Integer.parseInt(OutOf.getText());
+                        	Assignment first = new Assignment(AssignName.getText(), t);
+                        	for(int i=0; i<cla.get().size(); i++) {
+                        		cla.get().get(i).addScore(t, Integer.parseInt(scores.get(i).getText()));
+                        		String g=""+ cla.get().get(i).getGrade()+"";
+                        		grades.get(i).setText(g);
+                        	}
+                        	ass.dispose();
+                        }
+                    });
                     ass.add(BorderLayout.SOUTH, sub);
                     panWest.add(new JLabel("Scores:"));
                     panEast.add(new JLabel());
                     for(int i=0; i<students.size(); i++) {
-                        panWest.add(new JLabel(students.get(i)));
-                        panEast.add(new JTextField(10));
+                        panWest.add(new JLabel(cla.get().get(i).getName()));
+                        JTextField dude = new JTextField(10);
+                        panEast.add(dude);
+                        scores.add(dude);
+                        
                     }
                     ass.add(BorderLayout.WEST, panWest);
                     ass.add(BorderLayout.EAST, panEast);
@@ -246,10 +292,14 @@ public class GUI {
                 }
             });
 
-        JTextField text = new JTextField(10);
-        west.add(text);
-        fields.add(text);
-        middle.add(new JLabel("Grade TBD"));
+        if(fields.size()==0) {
+	        JTextField text = new JTextField(10);
+	        west.add(text);
+	        fields.add(text);
+	        JLabel lab = new JLabel("        TBD");
+	        middle.add(lab);
+	        grades.add(lab);
+        }
 
         show.pack();
     }
@@ -258,52 +308,69 @@ public class GUI {
     throws FileNotFoundException {
         while(ask.hasNextLine()) {
             String name = ask.nextLine();
-            while(ask.hasNextInt()) {
-                int num = ask.nextInt();
-                JButton add = new JButton(name);
-                info.add(name);
-                info.add(""+num+"");
-                for(int i = 1; i<=num; i++) {
-                    String student = ask.nextLine();
-                    JCheckBox check = new JCheckBox();
-                    west.add(check);
-                    check.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent event) {
-
-                            }
-                        });
-
-                    middle.add(new JTextField(student, 10));
-                    east.add(new JLabel("Grade TBD"));
-                    show.pack();
-                    show.setVisible(true);
-                }
-                Class cla = new Class();
-                box.add(cla);
-                buttonO.add(add);
-                center.add(add);
-                buttons.add(name);
-                frame.setVisible(true);
-                add.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent event) {
-                            classes(add);
-                        }
-                    });
+            JButton add = new JButton(name);
+            info.add(name);
+            Class cla = new Class(name);
+            box.add(cla);
+            if(ask.hasNextLine()) {
+            	String studenT;
+            	do{
+                		studenT = ask.nextLine();
+	                    if(studenT.equals("")) {
+	                    }
+	                    else {
+	                	JTextField field = new JTextField(studenT, 8);
+	                	int t = ask.nextInt();
+	                	int s = ask.nextInt();
+	                	ask.nextLine();
+	                	Student stud = new Student(studenT);
+	                	cla.addStudent(stud);
+	                	stud.addScore(t,s);
+	                	students.add(stud.getName());
+	                    west.add(field);
+	                    fields.add(field);
+	                    String str = "        "+stud.getGrade()+"";
+	                    JLabel lab = new JLabel(str);
+	        	        middle.add(lab);
+	        	        grades.add(lab);
+	                    }
+                } while(!studenT.equals(""));
+                
             }
+            show.setVisible(true);
+            show.setVisible(false);
+            buttonO.add(add);
+            center.add(add);
+            buttons.add(name);
+            frame.setVisible(true);
+            add.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent event) {
+                        classes(add, box.getID(cla));
+                    }
+                });
         }
     }
 
     public void save() {
         try{
             PrintStream out = new PrintStream(file);
-            for(int i=0; i<info.size(); i++) {
-                out.println(info.get(i));
+            for(int i=0; i<box.get().size(); i++) {
+                Class cla = box.getClass(i);
+            	out.println(cla.getName());
+            	for(int j=0; j<cla.get().size(); j++) {
+            		Student stud = cla.getStudent(j);
+            		out.println(stud.getName());
+            		out.println(stud.getTotal());
+            		out.println(stud.getMy());
+            	}
+            	out.println();
             }
+            
+            out.close();
         }
         catch(FileNotFoundException err) {
-            System.out.println("The file that is holding your information has been moved or deleted. Please move the file back or a create a new one.");
+            System.out.println("The file that is holding your information has been moved or deleted. Please move the file back to its original location.");
         }
 
     }

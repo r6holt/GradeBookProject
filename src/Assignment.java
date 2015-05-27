@@ -1,9 +1,10 @@
-
+import java.util.*;
 public class Assignment{
-  int score;
   int outOf;
-  public Assignment(int score, int outOf){
-    this.score=score;
+  String name;
+  ArrayList<Integer> scores = new ArrayList<Integer>();
+  
+  public Assignment(String name, int outOf){
     this.outOf=outOf;
   }
 }

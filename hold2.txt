@@ -1,12 +1,19 @@
 Period 1
-0
+Geraldo
+210
+187
+Keith
+210
+177
+Richard
+210
+191
+Kenny
+210
+153
+Manny
+210
+185
+
 Period 2
-0
-Period 3
-0
-Period 4
-0
-Period 5
-0
-Period 6
-0
+
