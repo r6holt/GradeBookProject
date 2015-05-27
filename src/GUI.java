@@ -29,6 +29,23 @@ public class GUI {
     public GUI() 
     throws FileNotFoundException {
         //JOptionPane.showMessageDialog(null, "Trying it out.");
+    	try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    	
         Dimension d = new Dimension(350,400);
         frame.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
         frame.setBackground(Color.RED);
@@ -176,7 +193,7 @@ public class GUI {
         JTextField AssignName = new JTextField(10);
         JTextField OutOf = new JTextField(10);
         Class cla = box.getClass(ID);
-
+        
         Dimension d2 = new Dimension(500,600);
         show.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
         show.setBackground(Color.RED);
