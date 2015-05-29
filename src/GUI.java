@@ -193,22 +193,20 @@ public class GUI {
         JTextField AssignName = new JTextField(10);
         JTextField OutOf = new JTextField(10);
         Class cla = box.getClass(ID);
+        System.out.println(cla);
         
         Dimension d2 = new Dimension(500,600);
         show.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
         show.setBackground(Color.RED);
         show.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
         show.setVisible(true);
         show.setSize(d2);
         show.setLocationRelativeTo(null);
-        
-        //JScrollPane pane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        //show.add(BorderLayout.WEST, pane);
-        //show.setContentPane(pane);
 
         show.setLayout(new BorderLayout());
         show.add(BorderLayout.NORTH, new JLabel(buttons.get(buttonO.indexOf(selected))));
-
+        
         JButton submit = new JButton("Submit");
         submit.addActionListener(new ActionListener() {
                 @Override
@@ -223,11 +221,29 @@ public class GUI {
                 }
             });
         
-        for(int i=0; i<west.getComponentCount(); i++) {
-        	east.add(new JLabel("  %"));
+        show.addWindowListener(new WindowAdapter() {
+      	  	public void windowClosing(WindowEvent e) {
+      	  		west.removeAll();
+      	  		middle.removeAll();
+      	  		east.removeAll();
+      	  		show.remove(submit);
+      	  		fields.clear();
+      	  		students.clear();
+      	  		grades.clear();
+      	  	}
+        });
+        
+        for(int k=0; k<cla.get().size(); k++) {
+        	JTextField field = new JTextField(cla.get().get(k).getName(), 8);
+        	west.add(field);
+            fields.add(field);
+            String str = "        "+cla.getStudent(k).getGrade()+"";
+            JLabel lab = new JLabel(str);
+	        middle.add(lab);
+	        grades.add(lab);
+	        students.add(cla.getStudent(k).getName());
         }
-
-        show.add(BorderLayout.SOUTH, submit);
+     
         show.add(BorderLayout.WEST, west);
         show.add(BorderLayout.CENTER, middle);
         show.add(BorderLayout.EAST, east);
@@ -262,17 +278,26 @@ public class GUI {
         assignment.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
+                	Class cl=null;
+                	System.out.println(cl);
                 	ArrayList<JTextField> scores = new ArrayList<JTextField>();
                     JFrame ass = new JFrame("Assignments");
                     JPanel panWest = new JPanel(new GridLayout(20,1));
                     JPanel panEast = new JPanel(new GridLayout(20,1));
                     Dimension d2 = new Dimension(300,550);
                     ass.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
-                    ass.setBackground(Color.RED);
                     ass.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     ass.setVisible(true);
                     ass.setSize(d2);
                     ass.setLocationRelativeTo(null);
+                    
+                    ass.addWindowListener(new WindowAdapter() {
+                  	  	public void windowClosing(WindowEvent e) {
+                  	  		panWest.removeAll();
+                  	  		panEast.removeAll();
+                  	  		scores.clear();
+                  	  	}
+                    });
 
                     ass.setLayout(new BorderLayout());
                     panWest.add(new JLabel("Assignment name:"));
@@ -285,9 +310,9 @@ public class GUI {
                         public void actionPerformed(ActionEvent event) {
                         	int t = Integer.parseInt(OutOf.getText());
                         	Assignment first = new Assignment(AssignName.getText(), t);
-                        	for(int i=0; i<cla.get().size(); i++) {
-                        		cla.get().get(i).addScore(t, Integer.parseInt(scores.get(i).getText()));
-                        		String g=""+ cla.get().get(i).getGrade()+"";
+                        	for(int i=0; i<cl.get().size(); i++) {
+                        		cl.getStudent(i).addScore(t, Integer.parseInt(scores.get(i).getText()));
+                        		String g=""+ cl.get().get(i).getGrade()+"";
                         		grades.get(i).setText(g);
                         	}
                         	ass.dispose();
@@ -296,8 +321,9 @@ public class GUI {
                     ass.add(BorderLayout.SOUTH, sub);
                     panWest.add(new JLabel("Scores:"));
                     panEast.add(new JLabel());
+                    System.out.println(cl);
                     for(int i=0; i<students.size(); i++) {
-                        panWest.add(new JLabel(cla.get().get(i).getName()));
+                        panWest.add(new JLabel(cl.getStudent(i).getName()));
                         JTextField dude = new JTextField(10);
                         panEast.add(dude);
                         scores.add(dude);
@@ -308,6 +334,13 @@ public class GUI {
                     ass.setVisible(true);
                 }
             });
+        
+        for(int i=0; i<west.getComponentCount(); i++) {
+        	east.add(new JLabel("  %"));
+        }
+        show.setVisible(false);
+        show.setVisible(true);
+        show.add(BorderLayout.SOUTH, submit);
 
         if(fields.size()==0) {
 	        JTextField text = new JTextField(10);
@@ -336,20 +369,20 @@ public class GUI {
 	                    if(studenT.equals("")) {
 	                    }
 	                    else {
-	                	JTextField field = new JTextField(studenT, 8);
+	                	//JTextField field = new JTextField(studenT, 8);
 	                	int t = ask.nextInt();
 	                	int s = ask.nextInt();
 	                	ask.nextLine();
 	                	Student stud = new Student(studenT);
 	                	cla.addStudent(stud);
 	                	stud.addScore(t,s);
-	                	students.add(stud.getName());
-	                    west.add(field);
-	                    fields.add(field);
-	                    String str = "        "+stud.getGrade()+"";
-	                    JLabel lab = new JLabel(str);
-	        	        middle.add(lab);
-	        	        grades.add(lab);
+	                	//students.add(stud.getName());
+	                    //west.add(field);
+	                    //fields.add(field);
+	                    //String str = "        "+stud.getGrade()+"";
+	                    //JLabel lab = new JLabel(str);
+	        	        //middle.add(lab);
+	        	        //grades.add(lab);
 	                    }
                 } while(!studenT.equals(""));
                 
