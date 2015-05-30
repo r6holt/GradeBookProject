@@ -4,12 +4,10 @@ public class Class {
     ArrayList<Student> list = new ArrayList<Student>();
     static int classID = -1;
     String name;
-    boolean is;
     
     public Class (String name) {
     	this.classID++;
     	this.name=name;
-    	is = false;
     }
     
     public void addStudent(Student student) {
@@ -37,12 +35,9 @@ public class Class {
     	return -1;
     }
     
-    public void change() {
-    	is=!is;
+    public int getID() {
+    	return this.classID;
     }
     
-    public boolean is() {
-    	return this.is;
-    }
 }
 
