@@ -33,10 +33,24 @@ public class Assignment{
 	  all+=one;
 	  taking++;
 	  this.average=(all/taking);
+	  this.average = Math.round(average * 100);
+	  this.average=average/100;
   }
   
   public double getAverage() {
 	  return this.average;
+  }
+  
+  public int getTaking() {
+	  return this.taking;
+  }
+  
+  public void setAverage(double d) {
+	  this.average=d;
+  }
+  
+  public void setTaking(int i) {
+	  this.taking=i;
   }
 }
 

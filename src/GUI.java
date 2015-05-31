@@ -26,7 +26,9 @@ public class GUI {
 
     Box box = new Box();
     File file = new File("hold2.txt");
+    File a = new File("a.txt");
     Scanner ask = new Scanner(file);
+    Scanner as = new Scanner(a);
     ArrayList<String> info = new ArrayList<String>();
     public GUI() 
     throws FileNotFoundException {
@@ -243,28 +245,44 @@ public class GUI {
         all.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-            	JFrame tot = new JFrame("Assignments");
-            	Dimension d = new Dimension(350,400);
-                tot.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
-                tot.setBackground(Color.RED);
-                tot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                tot.setVisible(true);
-                tot.setSize(d);
-                tot.setLocationRelativeTo(null);
-                
-                tot.setLayout(new FlowLayout());
-                JPanel toter = new JPanel(new GridLayout(15,3));
-                tot.add(toter);
-                
-            	for(Assignment a : assignments) {
-            		if(toter.getComponentCount()>=45) {
-            			
-            		}
-            		else if(a.getID()==cla.getID()) {
-            			toter.add(new JLabel(a.getName()));
-            			toter.add(new JLabel(""+a.getOutOf()));
-            			toter.add(new JLabel(""+a.getAverage()));
-            		}
+            	if(cla.getA().size()==0) {
+            		JOptionPane.showMessageDialog(null, "There are currently no assignments for this class.");
+            	}
+            	else {
+	            	JFrame tot = new JFrame("Assignments");
+	            	Dimension d = new Dimension(350,400);
+	                tot.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
+	                tot.setBackground(Color.RED);
+	                tot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	                tot.setVisible(true);
+	                tot.setSize(d);
+	                tot.setLocationRelativeTo(null);
+	                
+	                tot.setLayout(new FlowLayout());
+	                JPanel toter = new JPanel(new GridLayout(cla.getA().size()+1,3,5,2));
+	                tot.add(toter);
+	                
+	                tot.addWindowListener(new WindowAdapter() {
+	              	  public void windowClosing(WindowEvent e) {
+	              		  toter.removeAll();
+	              	  }
+	              });
+	                
+	        			toter.add(new JLabel("NAME"));
+	        			toter.add(new JLabel("TOTAL"));
+	        			toter.add(new JLabel("AVERAGE"));
+	        				for(Assignment a : cla.getA()) {
+		            			JTextField marty = new JTextField(a.getName());
+		            			marty.setEditable(false);
+		            			toter.add(marty);
+		        				JTextField mart = new JTextField(""+a.getOutOf());
+		            			mart.setEditable(false);
+		            			toter.add(mart);
+		        				JTextField mar = new JTextField(""+a.getAverage());
+		            			mar.setEditable(false);
+		            			toter.add(mar);
+		        			}
+	            	tot.pack();
             	}
             }
         });
@@ -318,8 +336,9 @@ public class GUI {
                         @Override
                         public void actionPerformed(ActionEvent event) {
                         	int t = Integer.parseInt(OutOf.getText());
-                        	Assignment first = new Assignment(AssignName.getText(), t, cla.getID());
+                        	Assignment first = new Assignment(AssignName.getText(), t, cl.getID());
                         	assignments.add(first);
+                        	cl.addA(first);
                         	for(int i=0; i<cl.get().size(); i++) {
                         		cl.getStudent(i).addScore(t, Integer.parseInt(scores.get(i).getText()));
                         		first.update(Integer.parseInt(scores.get(i).getText()));
@@ -419,7 +438,20 @@ public class GUI {
 	        	        //grades.add(lab);
 	                    }
                 } while(!studenT.equals(""));
-                
+              
+            }
+            
+            while(as.hasNextLine()) {
+        		String n = as.nextLine();
+        		int out = as.nextInt();
+        		int id = as.nextInt();
+        		double av = as.nextDouble();
+        		int tak = as.nextInt();
+        		as.nextLine();
+        		Assignment a = new Assignment(n,out, id);
+        		a.setAverage(av);
+        		a.setTaking(tak);
+        		assignments.add(a);
             }
             show.setVisible(true);
             show.setVisible(false);
@@ -434,11 +466,16 @@ public class GUI {
                     }
                 });
         }
+        for(Assignment a : assignments) {
+        	box.get().get(a.getID()).addA(a);
+        }
     }
 
     public void save() {
         try{
             PrintStream out = new PrintStream(file);
+            PrintStream asi = new PrintStream(a);
+            
             for(int i=0; i<box.get().size(); i++) {
                 Class cla = box.getClass(i);
             	out.println(cla.getName());
@@ -450,8 +487,16 @@ public class GUI {
             	}
             	out.println();
             }
+            for(int i=0; i<assignments.size(); i++) {
+            	asi.println(assignments.get(i).getName());
+            	asi.println(assignments.get(i).getOutOf());
+            	asi.println(assignments.get(i).getID());
+            	asi.println(assignments.get(i).getAverage());
+            	asi.println(assignments.get(i).getTaking());
+            }
             
             out.close();
+            asi.close();
         }
         catch(FileNotFoundException err) {
             System.out.println("The file that is holding your information has been moved or deleted. Please move the file back to its original location.");

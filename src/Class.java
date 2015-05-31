@@ -2,6 +2,7 @@ import java.util.*;
 public class Class {
 	
     ArrayList<Student> list = new ArrayList<Student>();
+    ArrayList<Assignment> sign = new ArrayList<Assignment>();
     static int classID = -1;
     String name;
     
@@ -37,6 +38,14 @@ public class Class {
     
     public int getID() {
     	return this.classID;
+    }
+    
+    public void addA(Assignment a) {
+    	sign.add(a);
+    }
+    
+    public ArrayList<Assignment> getA() {
+    	return sign;
     }
     
 }
