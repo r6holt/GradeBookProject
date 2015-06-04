@@ -7,10 +7,10 @@ public class Assignment{
   double average = 0;
   ArrayList<Integer> scores = new ArrayList<Integer>();
   
-  public Assignment(String name, int outOf, int ID){
+  public Assignment(String name, int outOf, int ID) {
 	  this.name=name;
 	  this.outOf=outOf;
-	  this.id=ID;
+	  //this.id=ID;
   }
   
   public int getID() {

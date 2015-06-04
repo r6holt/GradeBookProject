@@ -1,12 +1,15 @@
 
 public class Student {
-	String name;
+	String first;
+	String last;
 	double grade;
 	int total = 0;
 	int myGrade = 0;
+	int studID;
 	
-	public Student(String n) {
-		this.name=n;
+	public Student(String f, String l) {
+		this.first = f;
+		this.last = l;
 		grade=0.0;
 	}
 	
@@ -25,7 +28,7 @@ public class Student {
 	}
 	
 	public String getName() {
-		return this.name;
+		return this.first +" "+this.last;
 	}
 	
 	public int getTotal() {
@@ -34,6 +37,14 @@ public class Student {
 	
 	public int getMy() {
 		return this.myGrade;
+	}
+	
+	public String getLast() {
+		return this.last;
+	}
+	
+	public String getFirst() {
+		return this.first;
 	}
 
 }
