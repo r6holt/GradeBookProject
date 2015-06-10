@@ -265,53 +265,63 @@ public class GUI {
         
         order.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent event) {
-            	/*for(int i=0; i<fields.size(); i++) {
-            		if(cla.searchName(fields.get(i).getText(), lasts.get(i).getText())==-1){
-            			students.add(fields.get(i).getText());
-                        Student stud = new Student(fields.get(i).getText(), lasts.get(i).getText());
-                        cla.addStudent(stud);
-            		}
-                }*/
-            	
-            	ArrayList<String> lasty = new ArrayList<String>();
-            	ArrayList<Student> id = new ArrayList<Student>();
-            	int i=0;
-            	for(JTextField t : lasts) {
-            		if(!t.getText().trim().equals("")) {
-            			lasty.add(t.getText());
-            			id.add(cla.getStudent(i));
-            			i++;
-            		}
+            public void actionPerformed(ActionEvent event) {            	
+            	if(!(fields.size()==1 && fields.get(0).getText().trim().equals(""))) {
+	            	for(int i=0; i<fields.size(); i++) {
+	            		if(cla.searchName(fields.get(i).getText(), lasts.get(i).getText())==-1){
+	            			students.add(fields.get(i).getText());
+	                        Student stud = new Student(fields.get(i).getText(), lasts.get(i).getText());
+	                        cla.addStudent(stud);
+	                        for(int j=0; j<assignments.size(); j++) {
+	                        	stud.addAss(assignments.get(j));
+	                        	assignments.get(j).addScore(0);
+	                        }
+	            		}
+	                }
+	            	
+	            	ArrayList<String> lasty = new ArrayList<String>();
+	            	ArrayList<Student> id = new ArrayList<Student>();
+	            	int i=0;
+	            	
+	            	for(JTextField t : lasts) {
+	            		if(!t.getText().trim().equals("")) {
+	            			lasty.add(t.getText());
+	            			id.add(cla.getStudent(i));
+	            			i++;
+	            		}
+	            		
+	            	}
+	            	Collections.sort(lasty);
+	            	cla.arrange(lasty);
+	            	
+	            	west.removeAll();
+	      	  		west2.removeAll();
+	      	  		fields.clear();
+	      	  		students.clear();
+	      	  		lasts.clear();
+	      	  		middle.removeAll();
+	      	  		
+	      	  		west.add(new JLabel("     FIRST"));
+	      	  		west2.add(new JLabel("     LAST"));
+	      	  		middle.add(new JLabel("Grade(%)"));
+	      	  		
+	      	  		for(Student s : cla.get()) {
+	      	  			JTextField first = new JTextField(6);
+	      	  			JTextField last = new JTextField(6);
+	      	  			first.setText(s.getFirst());
+	      	  			last.setText(s.getLast());
+	      	  			west.add(first);
+	      	  			west2.add(last);
+	      	  			fields.add(first);
+	      	  			lasts.add(last);
+	      	  			students.add(s.getName());
+	      	  			middle.add(new JLabel(""+s.getGrade()));
+	      	  		}
+	      	  		show.pack();
+	      	  		show.setVisible(true);
+	      	  		lasty.clear();
+	      	  		id.clear();
             	}
-            	Collections.sort(lasty);
-            	cla.arrange(lasty);
-            	
-            	west.removeAll();
-      	  		west2.removeAll();
-      	  		fields.clear();
-      	  		students.clear();
-      	  		lasts.clear();
-      	  		middle.removeAll();
-      	  		
-      	  		west.add(new JLabel("     FIRST"));
-      	  		west2.add(new JLabel("     LAST"));
-      	  		middle.add(new JLabel("Grade(%)"));
-      	  		
-      	  		for(Student s : cla.get()) {
-      	  			JTextField first = new JTextField(6);
-      	  			JTextField last = new JTextField(6);
-      	  			first.setText(s.getFirst());
-      	  			last.setText(s.getLast());
-      	  			west.add(first);
-      	  			west2.add(last);
-      	  			fields.add(first);
-      	  			lasts.add(last);
-      	  			students.add(s.getName());
-      	  			middle.add(new JLabel(""+s.getGrade()));
-      	  		}
-      	  		show.pack();
-      	  		show.setVisible(true);
             }
         });
         
@@ -392,6 +402,23 @@ public class GUI {
 				            					}
 				            					a.update();
 				            					change.dispose();
+				            					tot.dispose();
+				            					show.dispose();
+				            					west.removeAll();
+				            	      	  		west2.removeAll();
+				            	      	  		middle.removeAll();
+				            	      	  		east.removeAll();
+				            	      	  		show.remove(submit);
+				            	      	  		fields.clear();
+				            	      	  		students.clear();
+				            	      	  		grades.clear();
+				            	      	  		show.remove(two);
+				            	      	  		two.removeAll();
+				            	      	  		addy.removeAll();
+				            	      	  		assign.removeAll();
+				            	      	  		cray.removeAll();
+				            	      	  		lasts.clear();
+				            					
 				            				}
 		            	                });
 		            	                change.pack();
@@ -448,6 +475,8 @@ public class GUI {
                   	  		panWest.removeAll();
                   	  		panEast.removeAll();
                   	  		scores.clear();
+                  	  		AssignName.removeAll();
+                  	  		OutOf.removeAll();
                   	  	}
                     });
 
@@ -464,13 +493,17 @@ public class GUI {
                         	Assignment first = new Assignment(AssignName.getText(), t, cl.getID());
                         	assignments.add(first);
                         	cl.addA(first);
+                        	//middle.removeAll();
+                        	//middle.add(new JLabel("Grade(%)"));
                         	for(int i=0; i<cl.get().size(); i++) {
                         		cl.getStudent(i).addScore(t, Integer.parseInt(scores.get(i).getText()));
                         		first.update(Integer.parseInt(scores.get(i).getText()));
                         		String g=""+ cl.get().get(i).getGrade()+"";
                         		grades.get(i).setText(g);
+                        		//middle.add(grades.get(i));
                         	}
                         	ass.dispose();
+                        	show.setVisible(true);
                         }
                     });
                     ass.add(BorderLayout.SOUTH, sub);
@@ -504,6 +537,7 @@ public class GUI {
       	  		addy.removeAll();
       	  		assign.removeAll();
       	  		cray.removeAll();
+      	  		lasts.clear();
       	  	}
         });
         
