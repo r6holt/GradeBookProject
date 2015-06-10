@@ -1,11 +1,8 @@
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-
-import javax.swing.BorderFactory.*;
 import javax.swing.border.EmptyBorder;
 public class GUI {
     JLabel none = new JLabel("                               Start by making a class!");
@@ -38,7 +35,7 @@ public class GUI {
     ArrayList<String> info = new ArrayList<String>();
     public GUI() 
     throws FileNotFoundException {
-        //JOptionPane.showMessageDialog(null, "Trying it out.");
+        //JOptionPane.showMessageDialog(null, "tester");
     	try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch (ClassNotFoundException e) {
@@ -217,6 +214,10 @@ public class GUI {
         show.setLayout(new BorderLayout());
         show.add(BorderLayout.NORTH, new JLabel(buttons.get(buttonO.indexOf(selected))));
         
+        west.add(new JLabel("   FIRST"));
+        west2.add(new JLabel("   LAST"));
+        middle.add(new JLabel("Grade(%)"));
+        
         JButton submit = new JButton("Submit");
         submit.addActionListener(new ActionListener() {
                 @Override
@@ -226,18 +227,20 @@ public class GUI {
                 			students.add(fields.get(i).getText());
 	                        Student stud = new Student(fields.get(i).getText(), lasts.get(i).getText());
 	                        cla.addStudent(stud);
+	                        for(int j=0; j<assignments.size(); j++) {
+	                        	stud.addAss(assignments.get(j));
+	                        	assignments.get(j).addScore(0);
+	                        }
                 		}
                     }
                 }
             });
      
         show.add(BorderLayout.WEST, cray);
-        //show.add(BorderLayout.WEST, west2);
         show.add(BorderLayout.CENTER, middle);
-        //show.add(BorderLayout.EAST, east);
         show.add(BorderLayout.SOUTH, submit);
-        cray.add(west);
         cray.add(west2);
+        cray.add(west);
         
         west.setBorder(new EmptyBorder(0, 0, 0, 0));
         west2.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -246,7 +249,7 @@ public class GUI {
         JMenuBar two = new JMenuBar();
         JMenu addy = new JMenu("Student");
         JMenu assign = new JMenu("Assignments");
-        JMenu view = new JMenu("View");
+        JMenu view = new JMenu("Sort");
         JMenuItem order = new JMenuItem("Alphabetical");
         JMenuItem add = new JMenuItem("Add Student");
         JMenuItem all = new JMenuItem("All Assignments");
@@ -263,13 +266,23 @@ public class GUI {
         order.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
+            	/*for(int i=0; i<fields.size(); i++) {
+            		if(cla.searchName(fields.get(i).getText(), lasts.get(i).getText())==-1){
+            			students.add(fields.get(i).getText());
+                        Student stud = new Student(fields.get(i).getText(), lasts.get(i).getText());
+                        cla.addStudent(stud);
+            		}
+                }*/
+            	
             	ArrayList<String> lasty = new ArrayList<String>();
             	ArrayList<Student> id = new ArrayList<Student>();
             	int i=0;
             	for(JTextField t : lasts) {
-            		lasty.add(t.getText());
-            		id.add(cla.getStudent(i));
-            		i++;
+            		if(!t.getText().trim().equals("")) {
+            			lasty.add(t.getText());
+            			id.add(cla.getStudent(i));
+            			i++;
+            		}
             	}
             	Collections.sort(lasty);
             	cla.arrange(lasty);
@@ -279,10 +292,15 @@ public class GUI {
       	  		fields.clear();
       	  		students.clear();
       	  		lasts.clear();
+      	  		middle.removeAll();
+      	  		
+      	  		west.add(new JLabel("     FIRST"));
+      	  		west2.add(new JLabel("     LAST"));
+      	  		middle.add(new JLabel("Grade(%)"));
       	  		
       	  		for(Student s : cla.get()) {
-      	  			JTextField first = new JTextField(10);
-      	  			JTextField last = new JTextField(10);
+      	  			JTextField first = new JTextField(6);
+      	  			JTextField last = new JTextField(6);
       	  			first.setText(s.getFirst());
       	  			last.setText(s.getLast());
       	  			west.add(first);
@@ -290,7 +308,7 @@ public class GUI {
       	  			fields.add(first);
       	  			lasts.add(last);
       	  			students.add(s.getName());
-      	  			
+      	  			middle.add(new JLabel(""+s.getGrade()));
       	  		}
       	  		show.pack();
       	  		show.setVisible(true);
@@ -314,7 +332,7 @@ public class GUI {
 	                tot.setLocationRelativeTo(null);
 	                
 	                tot.setLayout(new FlowLayout());
-	                JPanel toter = new JPanel(new GridLayout(cla.getA().size()+1,3,5,2));
+	                JPanel toter = new JPanel(new GridLayout(cla.getA().size()+2,3,5,2));
 	                tot.add(toter);
 	                
 	                tot.addWindowListener(new WindowAdapter() {
@@ -327,8 +345,58 @@ public class GUI {
 	        			toter.add(new JLabel("TOTAL"));
 	        			toter.add(new JLabel("AVERAGE"));
 	        				for(Assignment a : cla.getA()) {
-		            			JTextField marty = new JTextField(a.getName());
-		            			marty.setEditable(false);
+		            			JButton marty = new JButton(a.getName());
+		            			marty.addActionListener(new ActionListener() {
+		            				@Override
+		            				public void actionPerformed(ActionEvent event) {
+		            					ArrayList<JTextField> newGrades = new ArrayList<JTextField>();
+		            					JFrame change = new JFrame();
+		            					Dimension d = new Dimension(350,400);
+		            	                change.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
+		            	                change.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		            	                change.setVisible(true);
+		            	                change.setSize(d);
+		            	                change.setLocationRelativeTo(null);
+		            	                
+		            	                change.setLayout(new GridLayout(cla.get().size()+2, 3));
+		            	                
+		            	                change.add(new JLabel("LAST"));
+		            	                change.add(new JLabel("FIRST"));
+		            	                change.add(new JLabel("SCORE"));
+		            	                
+		            	                for(int i=0; i<cla.get().size(); i++) {
+		            	                	JTextField las = new JTextField(lasts.get(i).getText());
+		            	                	change.add(las);
+		            	                	las.setEditable(false);
+		            	                	
+		            	                	JTextField fir = new JTextField(fields.get(i).getText());
+		            	                	change.add(fir);
+		            	                	fir.setEditable(false);
+		            	                	
+		            	                	JTextField gra = new JTextField(""+a.getScore(i));
+		            	                	change.add(gra);
+		            	                	newGrades.add(gra);
+		            	                }
+		            	                change.add(new JLabel());
+		            	                JButton su = new JButton("Submit");
+		            	                change.add(su);
+		            	                change.add(new JLabel());
+		            	                su.addActionListener(new ActionListener() {
+				            				@Override
+				            				public void actionPerformed(ActionEvent event) {
+				            					for(int i=0; i<cla.get().size(); i++) {
+				            						Student s = cla.getStudent(i);
+				            						s.removeScore(a.outOf, a.getScore(i));
+				            						s.addScore(a.outOf, Integer.parseInt(newGrades.get(i).getText()));
+				            						a.getS().set(i, Integer.parseInt(newGrades.get(i).getText()));
+				            					}
+				            					a.update();
+				            					change.dispose();
+				            				}
+		            	                });
+		            	                change.pack();
+		            				}
+		            			});
 		            			toter.add(marty);
 		        				JTextField mart = new JTextField(""+a.getOutOf());
 		            			mart.setEditable(false);
@@ -345,8 +413,8 @@ public class GUI {
         add.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
-                    JTextField first = new JTextField(10);
-                    JTextField last = new JTextField(10);
+                    JTextField first = new JTextField(2);
+                    JTextField last = new JTextField(2);
                     west.add(first);
                     west2.add(last);
                     fields.add(first);
@@ -354,7 +422,6 @@ public class GUI {
                     JLabel lab = new JLabel("        TBD");
         	        middle.add(lab);
         	        grades.add(lab);
-        	        //east.add(new JLabel("  %"));
                     show.pack();
                     show.setVisible(true);
                     student++;
@@ -494,13 +561,6 @@ public class GUI {
 	                	Student stud = new Student(first, last);
 	                	cla.addStudent(stud);
 	                	stud.addScore(t,s);
-	                	//students.add(stud.getName());
-	                    //west.add(field);
-	                    //fields.add(field);
-	                    //String str = "        "+stud.getGrade()+"";
-	                    //JLabel lab = new JLabel(str);
-	        	        //middle.add(lab);
-	        	        //grades.add(lab);
 	                    }
                 } while(!first.equals(""));
               
@@ -514,9 +574,18 @@ public class GUI {
         		int tak = as.nextInt();
         		as.nextLine();
         		Assignment a = new Assignment(n, out, id);
+        		for(int i=0; i<box.getClass(id).get().size(); i++) {
+        			box.getClass(id).getStudent(i).addAss(a);
+        		}
         		a.setAverage(av);
         		a.setTaking(tak);
         		assignments.add(a);
+        		int score = as.nextInt();
+        		while(score!=-1) {
+        			a.addScore(score);
+        			score=as.nextInt();
+        		}
+        		as.nextLine();
             }
             show.setVisible(true);
             show.setVisible(false);
@@ -555,11 +624,14 @@ public class GUI {
             }
             for(int i=0; i<assignments.size(); i++) {
             	asi.println(assignments.get(i).getName());
-            	asi.println(assignments.get(i).getName());
             	asi.println(assignments.get(i).getOutOf());
             	asi.println(assignments.get(i).getID());
             	asi.println(assignments.get(i).getAverage());
             	asi.println(assignments.get(i).getTaking());
+            	for(int k=0; k<assignments.get(i).getS().size(); k++) {
+            		asi.println(assignments.get(i).getScore(k));
+            	}
+            	asi.println(-1);
             }
             
             out.close();

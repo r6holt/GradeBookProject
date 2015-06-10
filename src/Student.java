@@ -1,5 +1,6 @@
-
+import java.util.*;
 public class Student {
+	ArrayList<Assignment> Assign = new ArrayList<Assignment>();
 	String first;
 	String last;
 	double grade;
@@ -21,6 +22,20 @@ public class Student {
 		grade = 100.0*(m/g);
 		grade = Math.round(grade * 100);
 		grade = grade/100;
+	}
+	
+	public void removeScore(int tot, int my) {
+		total-=tot;
+		myGrade-=my;
+		double g = total;
+		double m = myGrade;
+		grade = 100.0*(m/g);
+		grade = Math.round(grade * 100);
+		grade = grade/100;
+	}
+	
+	public void addAss(Assignment a) {
+		Assign.add(a);
 	}
 	
 	public double getGrade() {
