@@ -335,14 +335,13 @@ public class GUI {
 	            	JFrame tot = new JFrame("Assignments");
 	            	Dimension d = new Dimension(350,400);
 	                tot.setIconImage(new ImageIcon(getClass().getResource("gradebook.png")).getImage());
-	                tot.setBackground(Color.RED);
 	                tot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	                tot.setVisible(true);
 	                tot.setSize(d);
 	                tot.setLocationRelativeTo(null);
 	                
 	                tot.setLayout(new FlowLayout());
-	                JPanel toter = new JPanel(new GridLayout(cla.getA().size()+2,3,5,2));
+	                JPanel toter = new JPanel(new GridLayout(cla.getA().size()+1,3,5,2));
 	                tot.add(toter);
 	                
 	                tot.addWindowListener(new WindowAdapter() {
@@ -608,6 +607,7 @@ public class GUI {
         		int tak = as.nextInt();
         		as.nextLine();
         		Assignment a = new Assignment(n, out, id);
+        		System.out.println(box.all.size());
         		for(int i=0; i<box.getClass(id).get().size(); i++) {
         			box.getClass(id).getStudent(i).addAss(a);
         		}
