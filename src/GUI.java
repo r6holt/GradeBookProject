@@ -133,7 +133,13 @@ public class GUI {
                                     int count = 0;
                                     for( int i=0; i<delete.size(); i++) {
                                         if(delete.get(i).isSelected()) {
-                                            center.remove(buttonO.get(i-count));
+                                            for(int j=0; j<box.getClass(i-count).getA().size(); j++) {
+                                            	Assignment a = box.getClass(i-count).getA().get(j);
+                                            	if(a.getID()==box.getClass(i-count).getID()) {
+                                            		assignments.remove(assignments.indexOf(a));
+                                            	}
+                                            }
+                                        	center.remove(buttonO.get(i-count));
                                             buttonO.remove(i-count);
                                             buttons.remove(i-count);
                                             box.remove(i-count);
@@ -457,7 +463,7 @@ public class GUI {
         assignment.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
-                	Class cl = cla;
+                	Class cl = box.get().get(ID);
                 	ArrayList<JTextField> scores = new ArrayList<JTextField>();
                     JFrame ass = new JFrame("Assignments");
                     JPanel panWest = new JPanel(new GridLayout(20,1));
@@ -474,8 +480,8 @@ public class GUI {
                   	  		panWest.removeAll();
                   	  		panEast.removeAll();
                   	  		scores.clear();
-                  	  		AssignName.removeAll();
-                  	  		OutOf.removeAll();
+                  	  		AssignName.setText("");;
+                  	  		OutOf.setText("");
                   	  	}
                     });
 
@@ -488,18 +494,17 @@ public class GUI {
                     sub.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent event) {
+                        	System.out.println(ID);
+                        	Class cl = box.get().get(ID);
                         	int t = Integer.parseInt(OutOf.getText());
-                        	Assignment first = new Assignment(AssignName.getText(), t, cl.getID());
+                        	Assignment first = new Assignment(AssignName.getText(), t, ID);
                         	assignments.add(first);
                         	cl.addA(first);
-                        	//middle.removeAll();
-                        	//middle.add(new JLabel("Grade(%)"));
                         	for(int i=0; i<cl.get().size(); i++) {
                         		cl.getStudent(i).addScore(t, Integer.parseInt(scores.get(i).getText()));
                         		first.update(Integer.parseInt(scores.get(i).getText()));
                         		String g=""+ cl.get().get(i).getGrade()+"";
                         		grades.get(i).setText(g);
-                        		//middle.add(grades.get(i));
                         	}
                         	ass.dispose();
                         	show.setVisible(true);
@@ -587,7 +592,6 @@ public class GUI {
 	                    }
 	                    else {
 	                    String last = ask.nextLine();
-	                	//JTextField field = new JTextField(studenT, 8);
 	                	int t = ask.nextInt();
 	                	int s = ask.nextInt();
 	                	ask.nextLine();
@@ -599,28 +603,6 @@ public class GUI {
               
             }
             
-            while(as.hasNextLine()) {
-        		String n = as.nextLine();
-        		int out = as.nextInt();
-        		int id = as.nextInt();
-        		double av = as.nextDouble();
-        		int tak = as.nextInt();
-        		as.nextLine();
-        		Assignment a = new Assignment(n, out, id);
-        		System.out.println(box.all.size());
-        		for(int i=0; i<box.getClass(id).get().size(); i++) {
-        			box.getClass(id).getStudent(i).addAss(a);
-        		}
-        		a.setAverage(av);
-        		a.setTaking(tak);
-        		assignments.add(a);
-        		int score = as.nextInt();
-        		while(score!=-1) {
-        			a.addScore(score);
-        			score=as.nextInt();
-        		}
-        		as.nextLine();
-            }
             show.setVisible(true);
             show.setVisible(false);
             buttonO.add(add);
@@ -634,6 +616,29 @@ public class GUI {
                     }
                 });
         }
+        
+        while(as.hasNextLine()) {
+    		String n = as.nextLine();
+    		int out = as.nextInt();
+    		int id = as.nextInt();
+    		double av = as.nextDouble();
+    		int tak = as.nextInt();
+    		as.nextLine();
+    		Assignment a = new Assignment(n, out, id);
+    		for(int i=0; i<box.getClass(id).get().size(); i++) {
+    			box.getClass(id).getStudent(i).addAss(a);
+    		}
+    		a.setAverage(av);
+    		a.setTaking(tak);
+    		assignments.add(a);
+    		int score = as.nextInt();
+    		while(score!=-1) {
+    			a.addScore(score);
+    			score=as.nextInt();
+    		}
+    		as.nextLine();
+        }
+        
         for(Assignment a : assignments) {
         	box.get().get(a.getID()).addA(a);
         }
