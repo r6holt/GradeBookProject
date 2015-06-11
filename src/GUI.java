@@ -615,7 +615,7 @@ public class GUI {
                     }
                 });
         }
-        
+        int score=0;
         while(as.hasNextLine()) {
     		String n = as.nextLine();
     		int out = as.nextInt();
@@ -623,6 +623,7 @@ public class GUI {
     		double av = as.nextDouble();
     		int tak = as.nextInt();
     		as.nextLine();
+    		if(box.get().size()>id) {
     		Assignment a = new Assignment(n, out, id);
     		for(int i=0; i<box.getClass(id).get().size(); i++) {
     			box.getClass(id).getStudent(i).addAss(a);
@@ -630,10 +631,17 @@ public class GUI {
     		a.setAverage(av);
     		a.setTaking(tak);
     		assignments.add(a);
-    		int score = as.nextInt();
+    		score = as.nextInt();
     		while(score!=-1) {
     			a.addScore(score);
     			score=as.nextInt();
+    		}
+    		}
+    		else {
+    			score=as.nextInt();
+    			while(score!=-1) {
+        			score=as.nextInt();
+        		}
     		}
     		as.nextLine();
         }
