@@ -494,7 +494,6 @@ public class GUI {
                     sub.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent event) {
-                        	System.out.println(ID);
                         	Class cl = box.get().get(ID);
                         	int t = Integer.parseInt(OutOf.getText());
                         	Assignment first = new Assignment(AssignName.getText(), t, ID);
